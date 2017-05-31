@@ -21,7 +21,7 @@ def error(msg):
 # Routers
 @app.route('/')
 def pong():
-    return 'Hello'
+    return 'Pong', {'Content-Type': 'text-plain; charset=utf-8'}
 
 
 @app.route('/upload', methods=['POST'])
