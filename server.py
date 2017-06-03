@@ -83,6 +83,30 @@ def upload():
 
     return send_file(image_path)
 
+@app.route('/test')
+def test():
+    real = Image.open('real_12.jpg')
+    preprocess = transforms.Compose([
+        transforms.Scale(opt.loadSize),
+        transforms.RandomCrop(opt.fineSize),
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5),
+                             (0.5, 0.5, 0.5)),
+    ])
+
+    # Load input
+    input_A = preprocess(real).unsqueeze_(0)
+    model.input_A.resize_(input_A.size()).copy_(input_A)
+    # Forward (model.real_A) through G and produce output (model.fake_B)
+    model.test()
+
+    # Convert image to numpy array
+    fake = util.tensor2im(model.fake_B.data)
+    # Save image
+    util.save_image(fake, 'test.jpg')
+
+    return send_file('test.jpg')
+
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
