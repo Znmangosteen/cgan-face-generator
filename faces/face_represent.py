@@ -5,9 +5,9 @@ import openface
 import pickle
 
 imgDim = 96 
-cuda = False
+cuda = True
 
-modelDir = '/home/pexea12/repos/openface/models'
+modelDir = '/home/ubuntu/openface/models'
 dlibModelDir = os.path.join(modelDir, 'dlib')
 openfaceModelDir = os.path.join(modelDir, 'openface')
 
@@ -66,7 +66,7 @@ def getRep(imgPath, multiple=False, verbose=True):
     sreps = sorted(reps, key=lambda x: x[0])
     return sreps
 
-url_source = '/home/pexea12/repos/tim/images/faces'
+url_source = '/home/ubuntu/test/faces'
 vector_dir = 'face_vectors'
 
 train_images = os.listdir(url_source + '/train')
@@ -76,13 +76,17 @@ train_images = [ (url_source + '/train/' + image) for image in train_images ]
 test_images = [ (url_source + '/test/' + image) for image in test_images ]
 images = train_images + test_images 
 
-for image in images:
-    result = getRep(img)[0]
-    vector = result[1]
+for index, image in enumerate(images):
+    print(index, image)
+    try:
+        result = getRep(image)[0]
+        vector = result[1]
 
-    image_name = os.path.basename('image')
-    with open(vector_dir + '/' + image_name, 'wb') as f:
-        pickle.dump(vector, f)
+        image_name = os.path.basename(image)
+        with open(vector_dir + '/' + image_name + '.pickle', 'wb') as f:
+            pickle.dump(vector, f)
+    except:
+        print('Error')
 
 
 
