@@ -1,3 +1,10 @@
+from torch.autograd import Variable
+from torchvision import transforms
+from PIL import Image
+
+from models.models import create_model
+import util.util as util
+
 import os
 import time
 
@@ -16,6 +23,10 @@ def allowed_file(filename):
 
 def error(msg):
     return jsonify({'error': msg})
+
+
+def generate(input_image, output_image):
+    """cGAN"""
 
 
 # Routers
@@ -44,4 +55,4 @@ def upload():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
