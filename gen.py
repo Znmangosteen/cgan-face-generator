@@ -31,7 +31,7 @@ def main():
     opt.serial_batches = True
     opt.use_dropout = True
     opt.align_data = True
-    opt.model = 'pix2pix'
+    opt.model = 'one_direction_test'
     opt.which_model_netG = 'unet_256'
     opt.which_direction = 'AtoB'
 
