@@ -10,6 +10,7 @@ import time
 
 from flask import Flask, jsonify, request, redirect, url_for, send_file, make_response
 
+
 ## Model options
 from options.base_options import BaseOptions
 
@@ -39,10 +40,10 @@ opt.which_direction = 'AtoB'
 # Load model
 model = create_model(opt)
 
-
 # Config
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'upload')
+app.config['GAN_FOLDER'] = os.path.join(os.getcwd(), 'cgan')
 app.config['ALLOWED_EXTENSIONS'] = set(['jpg', 'jpeg', 'png'])
 
 
@@ -54,16 +55,10 @@ def allowed_file(filename):
 def error(msg):
     return jsonify({'error': msg})
 
-
-def generate(input_image, output_image):
-    """cGAN"""
-
-
 # Routers
 @app.route('/')
 def pong():
     return 'Pong', {'Content-Type': 'text-plain; charset=utf-8'}
-
 
 @app.route('/upload', methods=['POST'])
 def upload():
@@ -83,9 +78,25 @@ def upload():
 
     return send_file(image_path)
 
-@app.route('/test')
-def test():
-    real = Image.open('real_12.jpg')
+@app.route('/gen', methods=['POST'])
+def gen():
+    if 'file' not in request.files:
+        return error('file form-data not existed'), 412
+
+    image = request.files['file']
+    if not allowed_file(image.filename):
+        return error('Only supported %s' % app.config['ALLOWED_EXTENSIONS']), 415
+
+    # Submit taylor.jpg ---> taylor_1234567.jpg (name + timestamp)
+    image_name, ext = image.filename.rsplit('.', 1)
+    image_name = image_name + '_' + str(int(time.time())) + '.' + ext
+    # Save image to /upload
+    image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+    image.save(image_path)
+
+
+    ## Load image and begin generating
+    real = Image.open(image_path)
     preprocess = transforms.Compose([
         transforms.Scale(opt.loadSize),
         transforms.RandomCrop(opt.fineSize),
@@ -102,10 +113,11 @@ def test():
 
     # Convert image to numpy array
     fake = util.tensor2im(model.fake_B.data)
+    output_path = os.path.join(app.config['GAN_FOLDER'], image_name)
     # Save image
-    util.save_image(fake, 'test.jpg')
+    util.save_image(fake, output_path)
 
-    return send_file('test.jpg')
+    return send_file(output_path)
 
 
 if __name__ == '__main__':
