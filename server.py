@@ -10,6 +10,36 @@ import time
 
 from flask import Flask, jsonify, request, redirect, url_for, send_file, make_response
 
+## Model options
+from options.base_options import BaseOptions
+
+class GenOptions(BaseOptions):
+    def initialize(self):
+        BaseOptions.initialize(self)
+        self.parser.add_argument('--ntest', type=int, default=float("inf"), help='# of test examples.')
+        self.parser.add_argument('--results_dir', type=str, default='./results/', help='saves results here.')
+        self.parser.add_argument('--aspect_ratio', type=float, default=1.0, help='aspect ratio of result images')
+        self.parser.add_argument('--phase', type=str, default='test', help='train, val, test, etc')
+        self.parser.add_argument('--which_epoch', type=str, default='latest', help='which epoch to load? set to latest to use latest cached model')
+        self.parser.add_argument('--how_many', type=int, default=50, help='how many test images to run')
+        self.isTrain = False
+
+# Parse argument options
+opt = GenOptions().parse()
+# Some defaults values for generating purpose
+opt.nThreads = 1
+opt.batchSize = 1
+opt.serial_batches = True
+opt.use_dropout = True
+opt.align_data = True
+opt.model = 'one_direction_test'
+opt.which_model_netG = 'unet_256'
+opt.which_direction = 'AtoB'
+
+# Load model
+model = create_model(opt)
+
+
 # Config
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'upload')
