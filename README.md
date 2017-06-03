@@ -25,3 +25,18 @@ python train.py --dataroot ./datasets/girls --name girls_pix2pix --model pix2pix
 ```
 python train.py --dataroot ./datasets/girls --name girls_pix2pix --model pix2pix --which_model_netG unet_256 --which_direction AtoB --lambda_A 100 --align_data --no_lsgan --use_dropout --batchSize 12 --save_latest_freq 2000 --niter 15 --niter_decay 15 --continue_train
 ```
+
+## Server
+
+```
+export FLASK_APP=server.py
+flask run -host 0.0.0.0
+```
+
+or simpler with debug mode:
+
+```
+python server.py
+```
+
+Server will run at port 5000.
