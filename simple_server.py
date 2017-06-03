@@ -2,9 +2,11 @@ import os
 import time
 
 from flask import Flask, jsonify, request, redirect, url_for, send_file, make_response
+from flask_cors import CORS, cross_origin
 
 # Config
 app = Flask(__name__)
+CORS(app)
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'upload')
 app.config['ALLOWED_EXTENSIONS'] = set(['jpg', 'jpeg', 'png'])
 
