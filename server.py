@@ -9,7 +9,7 @@ import os
 import time
 
 from flask import Flask, jsonify, request, redirect, url_for, send_file, make_response
-
+from flask_cors import CORS, cross_origin
 
 ## Model options
 from options.base_options import BaseOptions
@@ -42,6 +42,7 @@ model = create_model(opt)
 
 # Config
 app = Flask(__name__)
+CORS(app)
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'upload')
 app.config['GAN_FOLDER'] = os.path.join(os.getcwd(), 'cgan')
 app.config['ALLOWED_EXTENSIONS'] = set(['jpg', 'jpeg', 'png'])
