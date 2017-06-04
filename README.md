@@ -34,15 +34,17 @@ python gen.py --dataroot ./datasets/girls --name girls_pix2pix --model one_direc
 
 ## Server
 
-```
-export FLASK_APP=server.py
-flask run -host 0.0.0.0
-```
-
-or simpler with debug mode:
++ Get data:
 
 ```
-python server.py
+scp -i ~/hiepph_temp.pem ubuntu@52.77.227.105:/home/ubuntu/pytorch-CycleGAN-and-pix2pix/checkpoints/backup_8.zip .
+unzip backup_8.zip
+mkdir checkpoints
+mv girls_pix2pix/ checkpoints/
 ```
 
-Server will run at port 5000.
++ Get server up and running at port 5000:
+
+```
+python server.py --dataroot ./datasets/girls --name girls_pix2pix --model one_direction_test --which_model_netG unet_256 --which_direction AtoB
+```
