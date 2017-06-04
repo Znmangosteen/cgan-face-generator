@@ -11,6 +11,9 @@ import time
 from flask import Flask, jsonify, request, redirect, url_for, send_file, make_response
 from flask_cors import CORS, cross_origin
 
+import base64
+import datetime
+
 ## Model options
 from options.base_options import BaseOptions
 
@@ -79,15 +82,55 @@ def upload():
 
     return send_file(image_path)
 
+@app.route('/gen_base64', methods=['POST'])
+def gen_base64():
+    if 'image' not in request.json:
+        return error('Stupid request'), 412
+
+    image_data = request.json['image']
+
+    ip = request.remote_address
+    timestamp = datetime.datetime.now().isoformat()
+    image_name = ip + timestamp + '.png'
+
+    image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+
+    with open(image_path, "wb") as f:
+        f.write(base64.decodebytes(image_data))
+
+    ## Load image and begin generating
+    real = Image.open(image_path)
+    preprocess = transforms.Compose([
+        transforms.Scale(opt.loadSize),
+        transforms.RandomCrop(opt.fineSize),
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5),
+                             (0.5, 0.5, 0.5)),
+    ])
+
+    # Load input
+    input_A = preprocess(real).unsqueeze_(0)
+    model.input_A.resize_(input_A.size()).copy_(input_A)
+    # Forward (model.real_A) through G and produce output (model.fake_B)
+    model.test()
+
+    # Convert image to numpy array
+    fake = util.tensor2im(model.fake_B.data)
+    output_path = os.path.join(app.config['GAN_FOLDER'], image_name)
+    # Save image
+    util.save_image(fake, output_path)
+
+    return send_file(output_path)
+
+    
+
 @app.route('/gen', methods=['POST'])
 def gen():
     if 'file' not in request.files:
         return error('file form-data not existed'), 412
 
     image = request.files['file']
-    #if not allowed_file(image.filename):
-        #return error('Only supported %s' % app.config['ALLOWED_EXTENSIONS']), 415
-
+  
     # Submit taylor.jpg ---> taylor_1234567.jpg (name + timestamp)
     image_name, ext = image.filename.rsplit('.', 1)
     image_name = image_name + '_' + str(int(time.time())) + '.' + ext
