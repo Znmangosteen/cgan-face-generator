@@ -2,6 +2,7 @@
 __pycache__
 *.pyc
 .env
+**/*.zip
 
 # Data
 *.jpg
@@ -52,6 +53,3 @@ test/.coverage
 test/data/legacy_serialized.pt
 *~
 backup/
-
-# GAN
-cgan
