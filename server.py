@@ -87,11 +87,17 @@ def gen_base64():
     if 'image' not in request.json:
         return error('Stupid request'), 412
 
-    image_data = request.json['image']
+    if 'base64' in request.args:
+	    use_base64 = True if request.args.get('base64') == 'true' else False
+    else:
+        use_base64 = False
 
-    ip = request.remote_address
+    image_data = str.encode(request.json['image'])
+    image_data = image_data[23:]
+
+    ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     timestamp = datetime.datetime.now().isoformat()
-    image_name = ip + timestamp + '.png'
+    image_name = ip + '_' + timestamp + '.png'
 
     image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
 
@@ -120,14 +126,26 @@ def gen_base64():
     # Save image
     util.save_image(fake, output_path)
 
-    return send_file(output_path)
-
+    if not use_base64:
+        return send_file(output_path)
     
+    image = open(output_path, 'rb').read()
+    encoded = 'data:image/jpeg;base64,' + base64.b64encode(image).decode('utf-8')
+
+    return encoded
+
 
 @app.route('/gen', methods=['POST'])
 def gen():
     if 'file' not in request.files:
         return error('file form-data not existed'), 412
+
+    if 'base64' in request.args:
+	    use_base64 = True if request.args.get('base64') == 'true' else False
+    else:
+        use_base64 = False
+
+
 
     image = request.files['file']
   
@@ -137,6 +155,8 @@ def gen():
     # Save image to /upload
     image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
     image.save(image_path)
+
+    ## Crop here
 
 
     ## Load image and begin generating
@@ -161,7 +181,13 @@ def gen():
     # Save image
     util.save_image(fake, output_path)
 
-    return send_file(output_path)
+    if not use_base64:
+        return send_file(output_path)
+    
+    image = open(output_path, 'rb').read()
+    encoded = 'data:image/jpeg;base64,' + base64.b64encode(image).decode('utf-8')
+
+    return encoded
 
 
 if __name__ == '__main__':
