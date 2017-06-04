@@ -13,9 +13,11 @@ from flask_cors import CORS, cross_origin
 
 import base64
 import datetime
+import cv2
 
 ## Model options
 from options.base_options import BaseOptions
+from utils.image_processing import get_face_position, resize, process_edge_image
 
 class GenOptions(BaseOptions):
     def initialize(self):
@@ -134,6 +136,70 @@ def gen_base64():
 
     return encoded
 
+@app.route('/gen_photo', methods=['POST'])
+def gen_photo():
+    if 'file' not in request.files:
+        return error('file form-data not existed'), 412
+
+    if 'base64' in request.args:
+        use_base64 = True if request.args.get('base64') == 'true' else False
+    else:
+        use_base64 = False
+
+    image = request.files['file']
+  
+    # Submit taylor.jpg ---> taylor_1234567.jpg (name + timestamp)
+    image_name, ext = image.filename.rsplit('.', 1)
+    image_name = image_name + '_' + str(int(time.time())) + '.' + ext
+    # Save image to /upload
+    image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+    image.save(image_path)
+
+    ## Crop here
+    found_face, position = get_face_position(image_path)
+    if not found_face:
+        return 'No face found', 404
+
+    top = position['top']
+    bottom = position['bottom']
+    left = position['left']
+    right = position['right']
+
+    img = cv2.imread(image_path)
+    img = img[top:bottom, left:right]
+
+    cv2.imwrite(image_path, img)
+
+    ## Load image and begin generating
+    real = Image.open(image_path)
+    preprocess = transforms.Compose([
+        transforms.Scale(opt.loadSize),
+        transforms.RandomCrop(opt.fineSize),
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5),
+                             (0.5, 0.5, 0.5)),
+    ])
+
+    # Load input
+    input_A = preprocess(real).unsqueeze_(0)
+    model.input_A.resize_(input_A.size()).copy_(input_A)
+    # Forward (model.real_A) through G and produce output (model.fake_B)
+    model.test()
+
+    # Convert image to numpy array
+    fake = util.tensor2im(model.fake_B.data)
+    output_path = os.path.join(app.config['GAN_FOLDER'], image_name)
+    # Save image
+    util.save_image(fake, output_path)
+
+    if not use_base64:
+        return send_file(output_path)
+    
+    image = open(output_path, 'rb').read()
+    encoded = 'data:image/jpeg;base64,' + base64.b64encode(image).decode('utf-8')
+
+    return encoded
+
 
 @app.route('/gen', methods=['POST'])
 def gen():
@@ -144,8 +210,6 @@ def gen():
 	    use_base64 = True if request.args.get('base64') == 'true' else False
     else:
         use_base64 = False
-
-
 
     image = request.files['file']
   
