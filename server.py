@@ -17,7 +17,7 @@ import cv2
 
 ## Model options
 from options.base_options import BaseOptions
-from utils.image_processing import get_face_position, resize, process_edge_image
+from util.image_processing import get_face_position, resize, process_edge_image
 
 class GenOptions(BaseOptions):
     def initialize(self):
@@ -253,6 +253,9 @@ def gen():
 
     return encoded
 
+@app.route('/<path:path>')
+def static_file(path):
+    return app.send_static_file(path)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

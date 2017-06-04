@@ -1,7 +1,7 @@
 import cv2 
 import dlib
 
-def resize(img, width, height)
+def resize(img, width, height):
     new_img = cv2.resize(img, (width, height), interpolation=cv2.INTER_CUBIC)
     return new_img
 
@@ -40,9 +40,6 @@ def get_face_position(img_src):
         if top < 0: top = 0 
         if bottom > h: bottom = h 
 
-        crop = img[top:bottom, left:right]
-        crop = cv2.resize(crop, (512, 512), interpolation=cv2.INTER_CUBIC)
-        cv2.imwrite(output, crop)
 
         return True, {
             'top': top,
