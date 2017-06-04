@@ -45,7 +45,7 @@ app = Flask(__name__)
 CORS(app)
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'upload')
 app.config['GAN_FOLDER'] = os.path.join(os.getcwd(), 'cgan')
-app.config['ALLOWED_EXTENSIONS'] = set(['jpg', 'jpeg', 'png'])
+#app.config['ALLOWED_EXTENSIONS'] = set(['jpg', 'jpeg', 'png'])
 
 
 # Helpers
@@ -67,8 +67,8 @@ def upload():
         return error('file form-data not existed'), 412
 
     image = request.files['file']
-    if not allowed_file(image.filename):
-        return error('Only supported %s' % app.config['ALLOWED_EXTENSIONS']), 415
+    #if not allowed_file(image.filename):
+        #return error('Only supported %s' % app.config['ALLOWED_EXTENSIONS']), 415
 
     # Submit taylor.jpg ---> taylor_1234567.jpg (name + timestamp)
     image_name, ext = image.filename.rsplit('.', 1)
@@ -85,8 +85,8 @@ def gen():
         return error('file form-data not existed'), 412
 
     image = request.files['file']
-    if not allowed_file(image.filename):
-        return error('Only supported %s' % app.config['ALLOWED_EXTENSIONS']), 415
+    #if not allowed_file(image.filename):
+        #return error('Only supported %s' % app.config['ALLOWED_EXTENSIONS']), 415
 
     # Submit taylor.jpg ---> taylor_1234567.jpg (name + timestamp)
     image_name, ext = image.filename.rsplit('.', 1)
