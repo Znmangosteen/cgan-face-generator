@@ -46,5 +46,5 @@ mv girls_pix2pix/ checkpoints/
 + Get server up and running at port 5000:
 
 ```
-python server.py --dataroot ./datasets/girls --name girls_pix2pix --model one_direction_test --which_model_netG unet_256 --which_direction AtoB
+python server.py --dataroot ./datasets/gal  --name caf_pix2pix --model test --which_model_netG unet_256 --which_direction AtoB --dataset_mode single --norm batch
 ```
