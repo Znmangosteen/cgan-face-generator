@@ -8,6 +8,7 @@ from util.image_pool import ImagePool
 from .base_model import BaseModel
 from . import networks
 
+
 class Pix2PixModel(BaseModel):
     def name(self):
         return 'Pix2PixModel'
@@ -23,12 +24,12 @@ class Pix2PixModel(BaseModel):
 
         # load/define networks
         self.netG = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf,
-                                    opt.which_model_netG, opt.norm, opt.use_dropout, self.gpu_ids)
+                                      opt.which_model_netG, opt.norm, not opt.no_dropout, opt.init_type, self.gpu_ids)
         if self.isTrain:
             use_sigmoid = opt.no_lsgan
             self.netD = networks.define_D(opt.input_nc + opt.output_nc, opt.ndf,
-                                         opt.which_model_netD,
-                                         opt.n_layers_D, opt.norm, use_sigmoid, self.gpu_ids)
+                                          opt.which_model_netD,
+                                          opt.n_layers_D, opt.norm, use_sigmoid, opt.init_type, self.gpu_ids)
         if not self.isTrain or opt.continue_train:
             self.load_network(self.netG, 'G', opt.which_epoch)
             if self.isTrain:
@@ -42,15 +43,22 @@ class Pix2PixModel(BaseModel):
             self.criterionL1 = torch.nn.L1Loss()
 
             # initialize optimizers
+            self.schedulers = []
+            self.optimizers = []
             self.optimizer_G = torch.optim.Adam(self.netG.parameters(),
                                                 lr=opt.lr, betas=(opt.beta1, 0.999))
             self.optimizer_D = torch.optim.Adam(self.netD.parameters(),
                                                 lr=opt.lr, betas=(opt.beta1, 0.999))
+            self.optimizers.append(self.optimizer_G)
+            self.optimizers.append(self.optimizer_D)
+            for optimizer in self.optimizers:
+                self.schedulers.append(networks.get_scheduler(optimizer, opt))
 
-            print('---------- Networks initialized -------------')
-            networks.print_network(self.netG)
+        print('---------- Networks initialized -------------')
+        networks.print_network(self.netG)
+        if self.isTrain:
             networks.print_network(self.netD)
-            print('-----------------------------------------------')
+        print('-----------------------------------------------')
 
     def set_input(self, input):
         AtoB = self.opt.which_direction == 'AtoB'
@@ -71,7 +79,7 @@ class Pix2PixModel(BaseModel):
         self.fake_B = self.netG.forward(self.real_A)
         self.real_B = Variable(self.input_B, volatile=True)
 
-    #get image paths
+    # get image paths
     def get_image_paths(self):
         return self.image_paths
 
@@ -83,7 +91,7 @@ class Pix2PixModel(BaseModel):
         self.loss_D_fake = self.criterionGAN(self.pred_fake, False)
 
         # Real
-        real_AB = torch.cat((self.real_A, self.real_B), 1)#.detach()
+        real_AB = torch.cat((self.real_A, self.real_B), 1)
         self.pred_real = self.netD.forward(real_AB)
         self.loss_D_real = self.criterionGAN(self.pred_real, True)
 
@@ -118,10 +126,10 @@ class Pix2PixModel(BaseModel):
 
     def get_current_errors(self):
         return OrderedDict([('G_GAN', self.loss_G_GAN.data[0]),
-                ('G_L1', self.loss_G_L1.data[0]),
-                ('D_real', self.loss_D_real.data[0]),
-                ('D_fake', self.loss_D_fake.data[0])
-        ])
+                            ('G_L1', self.loss_G_L1.data[0]),
+                            ('D_real', self.loss_D_real.data[0]),
+                            ('D_fake', self.loss_D_fake.data[0])
+                            ])
 
     def get_current_visuals(self):
         real_A = util.tensor2im(self.real_A.data)
@@ -132,13 +140,3 @@ class Pix2PixModel(BaseModel):
     def save(self, label):
         self.save_network(self.netG, 'G', label, self.gpu_ids)
         self.save_network(self.netD, 'D', label, self.gpu_ids)
-
-    def update_learning_rate(self):
-        lrd = self.opt.lr / self.opt.niter_decay
-        lr = self.old_lr - lrd
-        for param_group in self.optimizer_D.param_groups:
-            param_group['lr'] = lr
-        for param_group in self.optimizer_G.param_groups:
-            param_group['lr'] = lr
-        print('update learning rate: %f -> %f' % (self.old_lr, lr))
-        self.old_lr = lr
