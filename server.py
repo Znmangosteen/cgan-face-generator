@@ -134,7 +134,7 @@ def gen_base64():
 
     # if not use_base64:
     #    return send_file(output_path)
-    
+
     # image = open(output_path, 'rb').read()
     # encoded = 'data:image/jpeg;base64,' + base64.b64encode(image).decode('utf-8')
 
@@ -152,7 +152,7 @@ def gen_photo():
         use_base64 = False
 
     image = request.files['file']
-  
+
     # Submit taylor.jpg ---> taylor_1234567.jpg (name + timestamp)
     image_name, ext = image.filename.rsplit('.', 1)
     image_name = image_name + '_' + str(int(time.time())) + '.' + ext
@@ -200,11 +200,11 @@ def gen_photo():
 
     # if not use_base64:
     #    return send_file(output_path)
-    
+
     # image = open(output_path, 'rb').read()
     # encoded = 'data:image/jpeg;base64,' + base64.b64encode(image).decode('utf-8')
 
-    return '/cgan/' + image_name 
+    return '/cgan/' + image_name
 
 @app.route('/gen_photo_nhat', methods=['POST'])
 def gen_photo_nhat():
@@ -217,7 +217,7 @@ def gen_photo_nhat():
         use_base64 = False
 
     image = request.files['file']
-  
+
     # Submit taylor.jpg ---> taylor_1234567.jpg (name + timestamp)
     image_name, ext = image.filename.rsplit('.', 1)
     image_name = image_name + '_' + str(int(time.time())) + '.' + ext
@@ -265,7 +265,7 @@ def gen_photo_nhat():
 
     if not use_base64:
         return send_file(output_path)
-    
+
     image = open(output_path, 'rb').read()
     encoded = 'data:image/jpeg;base64,' + base64.b64encode(image).decode('utf-8')
 
@@ -284,17 +284,17 @@ def gen_nhat():
         use_base64 = False
 
     image = request.files['file']
-  
+
     # Submit taylor.jpg ---> taylor_1234567.jpg (name + timestamp)
     image_name, ext = image.filename.rsplit('.', 1)
     image_name = image_name + '_' + str(int(time.time())) + '.' + ext
     # Save image to /upload
     image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
     image.save(image_path)
-    
+
     print('hello', image_name)
     ## Crop here
-    
+
     # image = cv2.imread(image_path)
     # image = cv2.cvtColor(image, cv2.COLOR_RGBA2RGB)
     # image = image[image[:, :, 3] == 255,:3]
@@ -327,7 +327,7 @@ def gen_nhat():
 
     if not use_base64:
         return send_file(output_path)
-    
+
     image = open(output_path, 'rb').read()
     encoded = 'data:image/jpeg;base64,' + base64.b64encode(image).decode('utf-8')
 
@@ -344,17 +344,17 @@ def gen():
         use_base64 = False
 
     image = request.files['file']
-  
+
     # Submit taylor.jpg ---> taylor_1234567.jpg (name + timestamp)
     image_name, ext = image.filename.rsplit('.', 1)
     image_name = image_name + '_' + str(int(time.time())) + '.' + ext
     # Save image to /upload
     image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
     image.save(image_path)
-    
+
     print('hello', image_name)
     ## Crop here
-    
+
     # image = cv2.imread(image_path)
     # image = cv2.cvtColor(image, cv2.COLOR_RGBA2RGB)
     # image = image[image[:, :, 3] == 255,:3]
@@ -387,7 +387,7 @@ def gen():
 
     # if not use_base64:
     #    return send_file(output_path)
-    
+
     # image = open(output_path, 'rb').read()
     # encoded = 'data:image/jpeg;base64,' + base64.b64encode(image).decode('utf-8')
 
