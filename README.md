@@ -8,7 +8,7 @@ This repo is the Back End part of integrating [Pytorch](http://pytorch.org/) mod
 
 ![overview](./demo/overview.png)
 
-Disclosure: The model implementation is written in Pytorch by [@junyanz](https://github.com/junyanz). Checkout his project [pytorch-CycleGAN-and-pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix). We use it for our research and implementation with retained [LICENSE](./LICENSE).
+Disclosure: The model implementation is written in Pytorch by [@junyanz](https://github.com/junyanz). Check out his project [pytorch-CycleGAN-and-pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix). We use it for our research and implementation with retained [LICENSE](./LICENSE).
 
 
 ## Requirements
@@ -29,7 +29,7 @@ cd pytorch-CycleGAN-and-pix2pix
 Grab data from here: [CAF dataset, over 8.000 faces of famous actresses](http://blog.bayo.vn/caf/).
 
 We use [crawler/face_edges.py](./crawler/face_edges.py) to get sketched images (`A`) from real CAF images (`B`).
-And then separate train/val for each `A`, `B` as 80/20.
+And then separate train/validation ratio for each `A`, `B` as 80/20.
 
 Script for combining them as trained input:
 
@@ -57,7 +57,7 @@ python -m visdom.server
 ```
 
 We trained 30 epochs. It takes about 10 hours on an Nvidia GeForce GTX 960. And just 2.5 hours on 4 GPUs of AWS EC2 `p2.8xlarge` instances in comparison.
-Train GAN is always expensive and time consuming.
+Train GAN is always expensive and time-consuming.
 
 A glimpse of training process:
 
@@ -66,10 +66,17 @@ A glimpse of training process:
 ![train](./demo/train.gif)
 
 
-Note: Pre-trained model is already in `checkpoints/caf_pix2pix/`, including G model's weights `latest_net_G.pth`  and D model's weights `latest_net_D.pth`.
+**Note**: Pre-trained model is already in `checkpoints/caf_pix2pix/`, including G model's weights `latest_net_G.pth`  and D model's weights `latest_net_D.pth`.
 
 
-## Server intergration
+## Server integration
+
+Back End part is now done in our repo:
+
+```
+git clone https://github.com/hiepph/cgan-face-generator
+cd cgan-face-generator
+```
 
 + Fire up Flask server at port 5000:
 
@@ -77,14 +84,29 @@ Note: Pre-trained model is already in `checkpoints/caf_pix2pix/`, including G mo
 python server.py --dataroot ./datasets/gal  --name caf_pix2pix --model test --which_model_netG unet_256 --which_direction AtoB --dataset_mode single --norm batch
 ```
 
-+ Check connection: `curl 'localhost:5000/'`. It should return `pong`.
++ Check connection:
+
+```
+curl 'localhost:5000/'
+```
 
 + Now you can test uploading your sketch as `form-data` with `file` key, route is `POST /gen`:
 
 ```
-curl -XPOST  -F "file=@/path/to/image"  'localhost:5000/gen' --output response.png
+curl -X POST -F "file=@/path/to/sketch.jpg" 'localhost:5000/gen' --output response.png
 ```
 
-or with [Postman](https://www.getpostman.com/):
+Or with [Postman](https://www.getpostman.com/):
 
 ![postman](./demo/postman.png)
+
+
+## Demo
+
++ Request image:
+
+![request](./demo/request.jpg)
+
++ Generated response image:
+
+![response](./demo/response.png)
