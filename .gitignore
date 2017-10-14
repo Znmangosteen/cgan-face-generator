@@ -5,6 +5,7 @@ __pycache__
 **/*.zip
 
 # Data
+checkpoints/
 **/*.zip
 
 # Pytorch

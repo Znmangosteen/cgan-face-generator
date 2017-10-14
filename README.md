@@ -66,16 +66,20 @@ A glimpse of training process:
 ![train](./demo/train.gif)
 
 
-**Note**: Pre-trained model is already in `checkpoints/caf_pix2pix/`, including G model's weights `latest_net_G.pth`  and D model's weights `latest_net_D.pth`.
-
-
 ## Server integration
 
-Back End part is now done in our repo:
++ Back End part is now done in our repo:
 
 ```
 git clone https://github.com/hiepph/cgan-face-generator
 cd cgan-face-generator
+```
+
++ Pre-trained model: You can grab [here](https://drive.google.com/file/d/0Bz1EQO3FGCUbYTViVTYxamhNb0E/view?usp=sharing), already included G model's weights `latest_net_G.pth`  and D model's weights `latest_net_D.pth`:
+
+```
+mv caf_cgan.zip cgan-face-generator
+unzip cgan-face-generator
 ```
 
 + Fire up Flask server at port 5000:
