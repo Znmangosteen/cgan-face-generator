@@ -107,10 +107,6 @@ Or with [Postman](https://www.getpostman.com/):
 
 ## Demo
 
-+ Request image:
+![gal](./demo/gal.png)
 
-![request](./demo/request.jpg)
-
-+ Generated response image:
-
-![response](./demo/response.png)
+![wonder](./demo/wonder.png)
