@@ -5,20 +5,15 @@ __pycache__
 **/*.zip
 
 # Data
-*.jpg
-*.jpeg
-*.png
 **/*.zip
 
 # Pytorch
 debug*
 datasets/
-checkpoints/
+web/
 results/
 build/
 dist/
-*.png
-*.jpg
 torch.egg-info/
 */**/__pycache__
 torch/version.py

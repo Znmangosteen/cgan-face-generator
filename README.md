@@ -1,50 +1,90 @@
-## Installation
+# Face generator using cGAN (Back End)
+
+We proposed and had experiment with cGAN model ([Paper](https://arxiv.org/abs/1611.07004)) for face generating task from sketches.
+
+Data is prepared from [CAF](http://blog.bayo.vn/caf/) dataset, including 8303 images of women's faces.
+
+This repo is the Back End part of integrating [Pytorch](http://pytorch.org/) model with [Flask](http://flask.pocoo.org/) Python web framework. It serves RESTful-API request and return generated image.
+
+![overview](./demo/overview.png)
+
+Disclosure: The model implementation is written in Pytorch by [@junyanz](https://github.com/junyanz). Checkout his project [pytorch-CycleGAN-and-pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix). We use it for our research and implementation with retained [LICENSE](./LICENSE).
+
+
+## Requirements
+
++ Follow installation at [pytorch-CycleGAN-and-pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix)
++ [OpenCV](https://opencv.org/) 3
++ [Flask](http://flask.pocoo.org/): `pip install flask`
++ All training part is done in [pytorch-CycleGAN-and-pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix)
 
 ```
-pip install visdom
-pip install dominate
+git clone https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix
+cd pytorch-CycleGAN-and-pix2pix
 ```
+
 
 ## Data
 
-+ `datasets/girls/train`
+Grab data from here: [CAF dataset, over 8.000 faces of famous actresses](http://blog.bayo.vn/caf/).
 
-+ `dataset/girls/val`
+We use [crawler/face_edges.py](./crawler/face_edges.py) to get sketched images (`A`) from real CAF images (`B`).
+And then separate train/val for each `A`, `B` as 80/20.
+
+Script for combining them as trained input:
+
+```
+python datasets/combine_A_and_B.py --fold_A ./datasets/caf/A --fold_B ./datasets/caf/B --fold_AB ./datasets/caf
+```
+
+It now has `./datasets/caf/train` and `./datasets/caf/val`. You can have sense of each image like example below:
+
+![input](./demo/input.png)
 
 
 ## Training
 
-+ From scratch:
++ Script for training:
 
 ```
-python train.py --dataroot ./datasets/girls --name girls_pix2pix --model pix2pix --which_model_netG unet_256 --which_direction AtoB --lambda_A 100 --align_data --no_lsgan --use_dropout --batchSize 12 --save_latest_freq 2000 --niter 15 --niter_decay 15
+python train.py --dataroot ./datasets/caf --name caf_pix2pix --model pix2pix --which_model_netG unet_256 --which_direction AtoB --lambda_A 100 --dataset_mode aligned --no_lsgan --norm batch --pool_size 0 --batchSize 12 --save_latest_freq 1000 --niter 15 --niter_decay 15
 ```
 
-+ Continue:
++ Fire up `visdom` server for visualization at http://localhost:8097:
 
 ```
-python train.py --dataroot ./datasets/girls --name girls_pix2pix --model pix2pix --which_model_netG unet_256 --which_direction AtoB --lambda_A 100 --align_data --no_lsgan --use_dropout --batchSize 12 --save_latest_freq 2000 --niter 15 --niter_decay 15 --continue_train
+python -m visdom.server
 ```
 
-## Generate
+We trained 30 epochs. It takes about 10 hours on an Nvidia GeForce GTX 960. And just 2.5 hours on 4 GPUs of AWS EC2 `p2.8xlarge` instances in comparison.
+Train GAN is always expensive and time consuming.
 
-```
-python gen.py --dataroot ./datasets/girls --name girls_pix2pix --model one_direction_test --which_model_netG unet_256 --which_direction AtoB --real_A real_A.jpg --fake_B fake_B.jpg
-```
+A glimpse of training process:
 
-## Server
+![visdom](./demo/train.png)
 
-+ Get data:
+![train](./demo/train.gif)
 
-```
-scp -i ~/hiepph_temp.pem ubuntu@52.77.227.105:/home/ubuntu/pytorch-CycleGAN-and-pix2pix/checkpoints/backup_8.zip .
-unzip backup_8.zip
-mkdir checkpoints
-mv girls_pix2pix/ checkpoints/
-```
 
-+ Get server up and running at port 5000:
+Note: Pre-trained model is already in `checkpoints/caf_pix2pix/`, including G model's weights `latest_net_G.pth`  and D model's weights `latest_net_D.pth`.
+
+
+## Server intergration
+
++ Fire up Flask server at port 5000:
 
 ```
 python server.py --dataroot ./datasets/gal  --name caf_pix2pix --model test --which_model_netG unet_256 --which_direction AtoB --dataset_mode single --norm batch
 ```
+
++ Check connection: `curl 'localhost:5000/'`. It should return `pong`.
+
++ Now you can test uploading your sketch as `form-data` with `file` key, route is `POST /gen`:
+
+```
+curl -XPOST  -F "file=@/path/to/image"  'localhost:5000/gen' --output response.png
+```
+
+or with [Postman](https://www.getpostman.com/):
+
+![postman](./demo/postman.png)
