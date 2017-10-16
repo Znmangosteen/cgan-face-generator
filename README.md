@@ -1,5 +1,7 @@
 # Face generator using cGAN (Back End)
 
+[Blog post](https://hiepph.gitlab.io/post/2017-10-16-cgan-face-generator/)
+
 We proposed and had experiment with cGAN model ([Paper](https://arxiv.org/abs/1611.07004)) for face generating task from sketches.
 
 Data is prepared from [CAF](http://blog.bayo.vn/caf/) dataset, including 8303 images of women's faces.
