@@ -1,6 +1,6 @@
 # Face generator using cGAN (Back End)
 
-[Blog post](https://hiepph.gitlab.io/post/2017-10-16-cgan-face-generator/)
+[Blog post](https://hiepph.github.io/post/2017-10-16-cgan-face-generator/)
 
 We proposed and had experiment with cGAN model ([Paper](https://arxiv.org/abs/1611.07004)) for face generating task from sketches.
 
