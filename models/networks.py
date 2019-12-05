@@ -31,7 +31,7 @@ def weights_init_xavier(m):
     elif classname.find('Linear') != -1:
         init.xavier_normal(m.weight.data, gain=1)
     elif classname.find('BatchNorm2d') != -1:
-        init.uniform(m.weight.data, 1.0, 0.02)
+        init.uniform(m.weight.data, 0.02, 1)
         init.constant(m.bias.data, 0.0)
 
 
@@ -119,7 +119,7 @@ def define_G(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropo
     else:
         raise NotImplementedError('Generator model name [%s] is not recognized' % which_model_netG)
     if len(gpu_ids) > 0:
-        netG.cuda(device_id=gpu_ids[0])
+        netG.cuda(device=gpu_ids[0])
     init_weights(netG, init_type=init_type)
     return netG
 
