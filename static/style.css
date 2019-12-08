@@ -1,0 +1,83 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+.cursor1 {
+    /*position: fixed;*/
+    /*width: 100%;*/
+    /*top: 100px;*/
+    /*left: 100px;*/
+    background: #C5C5C5;
+
+    display: inline-block;
+    overflow: hidden;
+}
+#canvas {
+        margin-left: 50px;
+    margin-right: 250px;
+}
+
+.actions {
+    margin-left: 50px;
+    /*position: fixed;*/
+    /*top: 0;*/
+    /*left: 0;*/
+}
+
+.actions > svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin: 0.5rem 1rem;
+    transition: all 0.3s;
+}
+
+.actions svg.active {
+    fill: #4567ff;
+    transform: scale(1.4);
+}
+
+.colors {
+    position: fixed;
+    top: 4rem;
+    left: 0.5rem;
+}
+
+.colors > li {
+    margin: 1rem 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 3px black;
+}
+
+.black {
+    background: black
+}
+
+.red {
+    background: red
+}
+
+.orange {
+    background: orange
+}
+
+.green {
+    background: green
+}
+
+.blue {
+    background: blueviolet
+}
+
+/*.cursor1{cursor: url('ico/black.ico') 8 20,auto;}*/
+/*.cursor2{cursor: url('ico/red.ico') 8 20,auto;}*/
+/*.cursor3{cursor: url('ico/orange.ico') 8 20,auto;}*/
+/*.cursor4{cursor: url('ico/green.ico') 8 20,auto;}*/
+/*.cursor5{cursor: url('ico/blue.ico') 8 20,auto;}*/
+/*.xiangpica{cursor: url('ico/xiangpica.ico') 8 20,auto;}*/

@@ -5,7 +5,7 @@ let painting = false;
 //第一个点坐标
 let startPoint = {x: undefined, y: undefined};
 //初始化画布大小
-wh();
+// wh();
 
 //特性检测
 if (document.body.ontouchstart !== undefined) {
@@ -36,7 +36,7 @@ if (document.body.ontouchstart !== undefined) {
     canvas.ontouchend = function () {
         painting = false;
     };
-}else{// 非触屏设备
+} else {// 非触屏设备
     // 按下鼠标(mouse)
     //鼠标点击事件（onmousedown）
     canvas.onmousedown = function (e) {
@@ -113,75 +113,90 @@ brush.onclick = function () {
 };
 
 //清屏
-clear.onclick = function() {
+clear.onclick = function () {
     ctx.fillStyle = '#C5C5C5';
-    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 };
 
 //保存
-save.onclick = function() {
-    let url = canvas.toDataURL('image/jpg');
-    let a = document.createElement('a');
-    document.body.appendChild(a);
-    a.href = url;
-    a.download = '草稿纸';
-    a.target = '_blank';
-    a.click()
-};
+save.onclick = function () {
+    var imgData = canvas.toDataURL("image/png");
+    var data = imgData.substr(22);
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", '/gen', true);
+    xhr.responseType = "blob";
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                $('#img1').attr("src", this.result).css({width: 300, height: 300});
+            };
+            reader.readAsDataURL(this.response);
 
-//画笔颜色及鼠标样式
-black.onclick = function () {
-    ctx.strokeStyle = 'black';
-    canvas.classList.add('cursor1');
-    canvas.classList.remove('cursor2');
-    canvas.classList.remove('cursor3');
-    canvas.classList.remove('cursor4');
-    canvas.classList.remove('cursor5');
-    canvas.classList.remove('xiangpica');
-    EraserEnabled = false;
-    eraser.classList.remove('active');
+        } else if (xhr.readyState === 4 && xhr.status > 499) {
+            alert("please try again");
+        }
+
+
+    };
+    xhr.send(data);
+
+
 };
-red.onclick = function () {
-    ctx.strokeStyle = 'red';
-    canvas.classList.add('cursor2');
-    canvas.classList.remove('cursor1');
-    canvas.classList.remove('cursor3');
-    canvas.classList.remove('cursor4');
-    canvas.classList.remove('cursor5');
-    canvas.classList.remove('xiangpica');
-    EraserEnabled = false;
-    eraser.classList.remove('active');
-};
-orange.onclick = function () {
-    ctx.strokeStyle = 'orange';
-    canvas.classList.add('cursor3');
-    canvas.classList.remove('cursor2');
-    canvas.classList.remove('cursor1');
-    canvas.classList.remove('cursor4');
-    canvas.classList.remove('cursor5');
-    canvas.classList.remove('xiangpica');
-    EraserEnabled = false;
-    eraser.classList.remove('active');
-};
-green.onclick = function () {
-    ctx.strokeStyle = 'green';
-    canvas.classList.add('cursor4');
-    canvas.classList.remove('cursor2');
-    canvas.classList.remove('cursor3');
-    canvas.classList.remove('cursor1');
-    canvas.classList.remove('cursor5');
-    canvas.classList.remove('xiangpica');
-    EraserEnabled = false;
-    eraser.classList.remove('active');
-};
-blue.onclick = function () {
-    ctx.strokeStyle = 'blueviolet';
-    canvas.classList.add('cursor5');
-    canvas.classList.remove('cursor2');
-    canvas.classList.remove('cursor3');
-    canvas.classList.remove('cursor4');
-    canvas.classList.remove('cursor1');
-    canvas.classList.remove('xiangpica');
-    EraserEnabled = false;
-    eraser.classList.remove('active');
-};
+//
+// //画笔颜色及鼠标样式
+// black.onclick = function () {
+//     ctx.strokeStyle = 'black';
+//     canvas.classList.add('cursor1');
+//     canvas.classList.remove('cursor2');
+//     canvas.classList.remove('cursor3');
+//     canvas.classList.remove('cursor4');
+//     canvas.classList.remove('cursor5');
+//     canvas.classList.remove('xiangpica');
+//     EraserEnabled = false;
+//     eraser.classList.remove('active');
+// };
+// red.onclick = function () {
+//     ctx.strokeStyle = 'red';
+//     canvas.classList.add('cursor2');
+//     canvas.classList.remove('cursor1');
+//     canvas.classList.remove('cursor3');
+//     canvas.classList.remove('cursor4');
+//     canvas.classList.remove('cursor5');
+//     canvas.classList.remove('xiangpica');
+//     EraserEnabled = false;
+//     eraser.classList.remove('active');
+// };
+// orange.onclick = function () {
+//     ctx.strokeStyle = 'orange';
+//     canvas.classList.add('cursor3');
+//     canvas.classList.remove('cursor2');
+//     canvas.classList.remove('cursor1');
+//     canvas.classList.remove('cursor4');
+//     canvas.classList.remove('cursor5');
+//     canvas.classList.remove('xiangpica');
+//     EraserEnabled = false;
+//     eraser.classList.remove('active');
+// };
+// green.onclick = function () {
+//     ctx.strokeStyle = 'green';
+//     canvas.classList.add('cursor4');
+//     canvas.classList.remove('cursor2');
+//     canvas.classList.remove('cursor3');
+//     canvas.classList.remove('cursor1');
+//     canvas.classList.remove('cursor5');
+//     canvas.classList.remove('xiangpica');
+//     EraserEnabled = false;
+//     eraser.classList.remove('active');
+// };
+// blue.onclick = function () {
+//     ctx.strokeStyle = 'blueviolet';
+//     canvas.classList.add('cursor5');
+//     canvas.classList.remove('cursor2');
+//     canvas.classList.remove('cursor3');
+//     canvas.classList.remove('cursor4');
+//     canvas.classList.remove('cursor1');
+//     canvas.classList.remove('xiangpica');
+//     EraserEnabled = false;
+//     eraser.classList.remove('active');
+// };
