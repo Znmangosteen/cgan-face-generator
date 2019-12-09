@@ -12,10 +12,11 @@ ul, ol {
     /*width: 100%;*/
     /*top: 100px;*/
     /*left: 100px;*/
-    background: #C5C5C5;
+    /*background: #C5C5C5;*/
 
     display: inline-block;
     overflow: hidden;
+    border: 5px solid #000000
 }
 #canvas {
         margin-left: 50px;

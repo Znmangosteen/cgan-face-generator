@@ -4,8 +4,16 @@ let ctx = canvas.getContext('2d');
 let painting = false;
 //第一个点坐标
 let startPoint = {x: undefined, y: undefined};
+
+
 //初始化画布大小
+init();
+
 // wh();
+function init() {
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
 
 //特性检测
 if (document.body.ontouchstart !== undefined) {
@@ -16,7 +24,9 @@ if (document.body.ontouchstart !== undefined) {
         let y = e.touches[0].clientY;
         painting = true;
         if (EraserEnabled) {
-            ctx.clearRect(x - 20, y - 20, 40, 40)
+            // ctx.clearRect(x - 20, y - 20, 40, 40)
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(x - 20, y - 20, 40, 40);
         }
         startPoint = {x: x, y: y};
     };
@@ -26,7 +36,9 @@ if (document.body.ontouchstart !== undefined) {
         let newPoint = {x: x, y: y};
         if (painting) {
             if (EraserEnabled) {
-                ctx.clearRect(x - 15, y - 15, 30, 30)
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(x - 15, y - 15, 30, 30);
+                // ctx.clearRect(x - 15, y - 15, 30, 30)
             } else {
                 drawLine(startPoint.x, startPoint.y, newPoint.x, newPoint.y);
             }
@@ -44,7 +56,9 @@ if (document.body.ontouchstart !== undefined) {
         let y = e.offsetY;
         painting = true;
         if (EraserEnabled) {
-            ctx.clearRect(x - 15, y - 15, 30, 30)
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(x - 15, y - 15, 30, 30);
+            // ctx.clearRect(x - 15, y - 15, 30, 30)
         }
         startPoint = {x: x, y: y};
     };
@@ -57,7 +71,9 @@ if (document.body.ontouchstart !== undefined) {
         let newPoint = {x: x, y: y};
         if (painting) {
             if (EraserEnabled) {
-                ctx.clearRect(x - 15, y - 15, 30, 30)
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(x - 15, y - 15, 30, 30);
+                // ctx.clearRect(x - 15, y - 15, 30, 30)
             } else {
                 drawLine(startPoint.x, startPoint.y, newPoint.x, newPoint.y);
             }
@@ -114,7 +130,7 @@ brush.onclick = function () {
 
 //清屏
 clear.onclick = function () {
-    ctx.fillStyle = '#C5C5C5';
+    ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 };
 
